@@ -13,7 +13,7 @@ function changeIframeSource() {
 		iframeUrlParam="?mode=admin";
 		break;
 	default:
-		iframeUrlParam=""
+		iframeUrlParam="";
 		break;
 	}
 	const iframe = document.getElementById('myIframe');
