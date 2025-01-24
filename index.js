@@ -1,6 +1,6 @@
 const BASEURL="https://script.google.com/macros/s/AKfycbyCQwuOOMkRPWCOzV2m2cZvncQxIPN2n9tjh-LE78IUVFIQI2dz0HJdllLIxOm3alOX/exec";
 
-function changeIframeSource() {
+function changeIframeSourceAsPerContainingFilename() {
 	const fullURL = document.location.href;
 	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
 	let iframeUrlParam;
