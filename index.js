@@ -3,7 +3,8 @@ const BASEURL="https://script.google.com/macros/s/AKfycbyCQwuOOMkRPWCOzV2m2cZvnc
 function changeIframeSource() {
 	const fullURL = document.location.href;
 	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
-	let iframeUrlParam
+	alert(filename);
+	let iframeUrlParam;
 	switch(filename){
 	case "index.html":
 		iframeUrlParam="?mode=simple";
