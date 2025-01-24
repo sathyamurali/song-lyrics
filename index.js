@@ -9,10 +9,11 @@ function changeIframeSource() {
 	case "index.html":
 		iframeUrlParam="?mode=simple";
 		break;
-	case "manager.html":
+	case "admin.html":
 		iframeUrlParam="?mode=admin";
 		break;
 	default:
+		//manager.html
 		iframeUrlParam="";
 		break;
 	}
