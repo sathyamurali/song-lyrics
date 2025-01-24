@@ -5,15 +5,15 @@ function changeIframeSourceAsPerContainingFilename() {
 	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
 	let iframeUrlParam;
 	switch(filename){
-	case "index.html":
-		iframeUrlParam="?mode=simple";
+	case "manager.html":
+		iframeUrlParam="";
 		break;
 	case "admin.html":
 		iframeUrlParam="?mode=admin";
 		break;
 	default:
-		//manager.html
-		iframeUrlParam="";
+		//index.html
+		iframeUrlParam="?mode=simple";
 		break;
 	}
 	const iframe = document.getElementById('myIframe');
