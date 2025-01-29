@@ -17,6 +17,7 @@ function changeIframeSourceAsPerContainingFilename() {
 	
 	const fullURL = document.location.href;
 	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
+	alert(filename);
 	let iframeUrlParam;
 	switch(filename){
 	case "manager.html":
