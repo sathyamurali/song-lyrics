@@ -1,9 +1,19 @@
 const BASEURL="https://script.google.com/macros/s/AKfycbyCQwuOOMkRPWCOzV2m2cZvncQxIPN2n9tjh-LE78IUVFIQI2dz0HJdllLIxOm3alOX/exec";
 
+function getAllUrlParameters() {
+	const params = new URLSearchParams(window.location.search);
+	const paramObject = {};
+	let paramStr="";
+	for (const [key, value] of params.entries()) {
+		paramObject[key] = value;
+		paramStr=paramStr+"?"+key+"="+value
+	}
+	return paramStr;
+}
+
 function changeIframeSourceAsPerContainingFilename() {
-	const urlParams = new URLSearchParams(window.location.search);
-	const paramEventId = urlParams.get('eventId'); 
-	console.log(paramEventId);
+	const paramStr = getAllUrlParameters();
+	console.log(paramStr);
 	
 	const fullURL = document.location.href;
 	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
