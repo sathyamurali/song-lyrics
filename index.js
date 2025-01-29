@@ -6,7 +6,7 @@ function getAllUrlParameters() {
 	let paramStr="";
 	for (const [key, value] of params.entries()) {
 		paramObject[key] = value;
-		paramStr=paramStr+"?"+key+"="+value
+		paramStr=paramStr+"&"+key+"="+value
 	}
 	return paramStr;
 }
@@ -20,14 +20,14 @@ function changeIframeSourceAsPerContainingFilename() {
 	let iframeUrlParam;
 	switch(filename){
 	case "manager.html":
-		iframeUrlParam="";
+		iframeUrlParam=paramStr.replace(/&/, "?");
 		break;
 	case "admin.html":
-		iframeUrlParam="?mode=admin";
+		iframeUrlParam="?mode=admin"+paramStr;
 		break;
 	default:
 		//index.html
-		iframeUrlParam="?mode=simple";
+		iframeUrlParam="?mode=simple"+paramStr;
 		break;
 	}
 	const iframe = document.getElementById('myIframe');
