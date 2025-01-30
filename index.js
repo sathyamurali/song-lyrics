@@ -10,14 +10,21 @@ function getAllUrlParameters() {
 	}
 	return paramStr;
 }
+function getLastFilename(url) {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const segments = pathname.split('/').filter(segment => segment.length > 0);
+    const lastSegment = segments.pop();
+    return lastSegment;
+}
 
 function changeIframeSourceAsPerContainingFilename() {
 	const paramStr = getAllUrlParameters();
-	console.log(paramStr);
+	//console.log(paramStr);
 	
 	const fullURL = document.location.href;
-	const filename = fullURL.substring(fullURL.lastIndexOf('/') + 1);
-	alert(filename);
+	const filename = getLastFilename(fullURL);
+	//console.log(filename);
 	let iframeUrlParam;
 	switch(filename){
 	case "manager.html":
