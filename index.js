@@ -33,6 +33,9 @@ function changeIframeSourceAsPerContainingFilename() {
 	case "admin.html":
 		iframeUrlParam="?mode=admin"+paramStr;
 		break;
+	case "search.html":
+		iframeUrlParam="?mode=search"+paramStr;
+		break;			
 	default:
 		//index.html
 		iframeUrlParam="?mode=simple"+paramStr;
