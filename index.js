@@ -1,4 +1,4 @@
-const BASEURL="https://script.google.com/macros/s/AKfycbxm2j43CwTTPqF1yXGkxwf1v5vEvZ6RNl988BPJuW9M3cMDbDeZRJaOBzkhfwunYFnq0w/exec";
+const BASEURL="https://script.google.com/macros/s/AKfycbw7B8ZN5OnBHa1mzlWVcuQcdC-ERE-bC6h2ZKYdApn-6JJVGi1iDdXGptgYTvGMHb5hmw/exec";
 
 function getAllUrlParameters() {
 	const params = new URLSearchParams(window.location.search);
