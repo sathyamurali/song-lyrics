@@ -43,14 +43,17 @@
             "postgres_changes",
             { event: "UPDATE", schema: "public", table: "sankeertan" },
             (payload) => {
-              console.log("Postgres changes payload:", payload);
-              // Access payload.new and payload.old
+              //console.log("Postgres changes payload:", payload);
               if (payload.new.id === 1) {
-                contentDiv.innerHTML = payload.new.content;
-                if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
-                  contentDiv.scrollTop = payload.new.scroll_position;
-                } else if (!scrollSyncCheckbox) {
-                  contentDiv.scrollTop = payload.new.scroll_position;
+                if (payload.new.content !== undefined) {
+                  contentDiv.innerHTML = payload.new.content;
+                }
+                if (payload.new.scroll_position !== undefined) {
+                  if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
+                    contentDiv.scrollTop = payload.new.scroll_position;
+                  } else if (!scrollSyncCheckbox) {
+                    contentDiv.scrollTop = payload.new.scroll_position;
+                  }
                 }
               }
             }
