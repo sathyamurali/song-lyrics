@@ -37,7 +37,7 @@
         fetchInitialData();
 
         sendContentButton.addEventListener('click', async () => {
-            await supabase.from('sankeertan').upsert({ id: 1, content: contentInput.value });
+            await client.from('sankeertan').upsert({ id: 1, content: contentInput.value });
             contentDiv.innerHTML = contentInput.value;
             contentInput.value = "";
         });
