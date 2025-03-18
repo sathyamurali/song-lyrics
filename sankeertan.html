@@ -25,7 +25,7 @@
         const scrollSyncCheckbox = document.getElementById("scrollSync");
             // Initial data fetch
             async function fetchInitialData() {
-                const { data, error } = await supabase.from('sankeertan').select('*').eq('id', 1).single();
+                const { data, error } = await client.from('sankeertan').select('*').eq('id', 1).single();
                 if (data) {
                     contentDiv.innerHTML = data.content;
                     contentDiv.scrollTop = data.scroll_position;
@@ -33,7 +33,7 @@
             }
             fetchInitialData();
 
-            supabase.channel('sankeertan').on('UPDATE', (payload) => {
+            client.channel('sankeertan').on('UPDATE', (payload) => {
                 if(payload.new.id === 1){
                     contentDiv.innerHTML = payload.new.content;
                     if (scrollSyncCheckbox.checked) {
