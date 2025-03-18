@@ -26,30 +26,33 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        channel
-          .on("broadcast", { event: "content_update" }, (payload) => {
-            contentDiv.innerHTML = payload.payload.content;
-          })
-          .on("broadcast", { event: "scroll_update" }, (payload) => {
-            contentDiv.scrollTop = payload.payload.scrollPosition;
-          })
-          .subscribe();
-        sendContentButton.addEventListener("click", () => {
-          channel.send({
-            type: "broadcast",
-            event: "content_update",
-            payload: { content: contentInput.value },
-          });
-          contentDiv.innerHTML = contentInput.value;
-          contentInput.value = "";
+         // Initial data fetch
+         async function fetchInitialData() {
+            const { data, error } = await supabase.from('shared_state').select('*').eq('id', 1).single();
+            if (data) {
+                contentDiv.innerHTML = data.content;
+                contentDiv.scrollTop = data.scroll_position;
+            }
+        }
+        fetchInitialData();
+
+        sendContentButton.addEventListener('click', async () => {
+            await supabase.from('sankeertan').upsert({ id: 1, content: contentInput.value });
+            contentDiv.innerHTML = contentInput.value;
+            contentInput.value = "";
         });
-        contentDiv.addEventListener("scroll", () => {
-          channel.send({
-            type: "broadcast",
-            event: "scroll_update",
-            payload: { scrollPosition: contentDiv.scrollTop },
-          });
+
+        contentDiv.addEventListener('scroll', async () => {
+            await supabase.from('sankeertan').upsert({ id: 1, scroll_position: contentDiv.scrollTop });
         });
+
+         supabase.channel('sankeertan').on('UPDATE', (payload) => {
+            if(payload.new.id === 1){
+                contentDiv.innerHTML = payload.new.content;
+                contentDiv.scrollTop = payload.new.scroll_position;
+            }
+        }).subscribe();        
+
       });
     </script>
   </body>
