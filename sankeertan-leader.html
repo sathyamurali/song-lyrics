@@ -1,61 +1,56 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Sankeertan</title>
     <style>
-        #content {
-            width: 80%;
-            height: 500px;
-            border: 1px solid #ccc;
-            overflow-y: auto;
-        }
+      #content {
+        width: 80%;
+        height: 500px;
+        border: 1px solid #ccc;
+        overflow-y: auto;
+      }
     </style>
-</head>
-<body>
-    <textarea id="contentInput" placeholder="Paste content here"></textarea><br>
-    <button id="sendContent">Send Content</button><br>
-
+  </head>
+  <body>
+    <textarea id="contentInput" placeholder="Paste content here"></textarea
+    ><br />
+    <button id="sendContent">Send Content</button><br />
     <div id="content"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        window.addEventListener('load', function() {
-            const supabaseUrl = 'https://radtpoqypgqetijvopho.supabase.co';
-	    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k';
-            const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-            const channel = client.channel('shared_content');
-            const contentInput = document.getElementById('contentInput');
-            const sendContentButton = document.getElementById('sendContent');
-            const contentDiv = document.getElementById('content');
-
-            channel
-                .on('broadcast', { event: 'content_update' }, (payload) => {
-                    contentDiv.innerHTML = payload.payload.content;
-                })
-                .on('broadcast', { event: 'scroll_update' }, (payload) => {
-                    contentDiv.scrollTop = payload.payload.scrollPosition;
-                })
-                .subscribe();
-
-            sendContentButton.addEventListener('click', () => {
-                channel.send({
-                    type: 'broadcast',
-                    event: 'content_update',
-                    payload: { content: contentInput.value },
-                });
-                contentDiv.innerHTML = contentInput.value;
-                contentInput.value = "";
-            });
-
-            contentDiv.addEventListener('scroll', () => {
-                channel.send({
-                    type: 'broadcast',
-                    event: 'scroll_update',
-                    payload: { scrollPosition: contentDiv.scrollTop },
-                });
-            });
+      window.addEventListener("load", function () {
+        const supabaseUrl = "https://radtpoqypgqetijvopho.supabase.co";
+        const supabaseAnonKey ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
+        const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const channel = client.channel("shared_content");
+        const contentInput = document.getElementById("contentInput");
+        const sendContentButton = document.getElementById("sendContent");
+        const contentDiv = document.getElementById("content");
+        channel
+          .on("broadcast", { event: "content_update" }, (payload) => {
+            contentDiv.innerHTML = payload.payload.content;
+          })
+          .on("broadcast", { event: "scroll_update" }, (payload) => {
+            contentDiv.scrollTop = payload.payload.scrollPosition;
+          })
+          .subscribe();
+        sendContentButton.addEventListener("click", () => {
+          channel.send({
+            type: "broadcast",
+            event: "content_update",
+            payload: { content: contentInput.value },
+          });
+          contentDiv.innerHTML = contentInput.value;
+          contentInput.value = "";
         });
+        contentDiv.addEventListener("scroll", () => {
+          channel.send({
+            type: "broadcast",
+            event: "scroll_update",
+            payload: { scrollPosition: contentDiv.scrollTop },
+          });
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
