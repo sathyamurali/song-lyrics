@@ -23,16 +23,25 @@
         const channel = client.channel("shared_content");
         const contentDiv = document.getElementById("content");
         const scrollSyncCheckbox = document.getElementById("scrollSync");
-        channel
-          .on("broadcast", { event: "content_update" }, (payload) => {
-            contentDiv.innerHTML = payload.payload.content;
-          })
-          .on("broadcast", { event: "scroll_update" }, (payload) => {
-            if (scrollSyncCheckbox.checked) {
-              contentDiv.scrollTop = payload.payload.scrollPosition;
+            // Initial data fetch
+            async function fetchInitialData() {
+                const { data, error } = await supabase.from('sankeertan').select('*').eq('id', 1).single();
+                if (data) {
+                    contentDiv.innerHTML = data.content;
+                    contentDiv.scrollTop = data.scroll_position;
+                }
             }
-          })
-          .subscribe();
+            fetchInitialData();
+
+            supabase.channel('sankeertan').on('UPDATE', (payload) => {
+                if(payload.new.id === 1){
+                    contentDiv.innerHTML = payload.new.content;
+                    if (scrollSyncCheckbox.checked) {
+                        contentDiv.scrollTop = payload.new.scroll_position;
+                    }
+                }
+            }).subscribe();
+
       });
     </script>
   </body>
