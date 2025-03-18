@@ -10,8 +10,8 @@
             const supabaseUrl = 'https://radtpoqypgqetijvopho.supabase.co';
 			const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k';
             try {
-                const supabase = await supabase.createClient(supabaseUrl, supabaseAnonKey);
-                console.log('Supabase initialized:', supabase);
+                const client  = await supabase.createClient(supabaseUrl, supabaseAnonKey);
+                console.log('Supabase initialized:', client );
             } catch (error) {
                 console.error('Supabase initialization error:', error);
             }
