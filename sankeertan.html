@@ -39,15 +39,22 @@
 
         client
           .channel("sankeertan")
-          .on("UPDATE", (payload) => {
-            console.log(JSON.stringify(payload));
-            if (payload.new.id === 1) {
-              contentDiv.innerHTML = payload.new.content;
-              if (scrollSyncCheckbox.checked) {
-                contentDiv.scrollTop = payload.new.scroll_position;
+          .on(
+            "postgres_changes",
+            { event: "UPDATE", schema: "public", table: "sankeertan" },
+            (payload) => {
+              console.log("Postgres changes payload:", payload);
+              // Access payload.new and payload.old
+              if (payload.new.id === 1) {
+                contentDiv.innerHTML = payload.new.content;
+                if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
+                  contentDiv.scrollTop = payload.new.scroll_position;
+                } else if (!scrollSyncCheckbox) {
+                  contentDiv.scrollTop = payload.new.scroll_position;
+                }
               }
             }
-          })
+          )
           .subscribe();
       });
     </script>
