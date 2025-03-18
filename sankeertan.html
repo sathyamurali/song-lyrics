@@ -1,44 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Follower - Sankeertan</title>
     <style>
-        #content {
-            width: 80%;
-            height: 500px;
-            border: 1px solid #ccc;
-            overflow-y: auto;
-        }
+      #content {
+        width: 80%;
+        height: 500px;
+        border: 1px solid #ccc;
+        overflow-y: auto;
+      }
     </style>
-</head>
-<body>
-    <label><input type="checkbox" id="scrollSync"> Scroll Sync</label><br>
-
+  </head>
+  <body>
+    <label><input type="checkbox" id="scrollSync" /> Scroll Sync</label><br />
     <div id="content"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        window.addEventListener('load', function() {
-            const supabaseUrl = 'https://radtpoqypgqetijvopho.supabase.co';
-	    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k';
-				 
-            const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-            const channel = client.channel('shared_content');
-            const contentDiv = document.getElementById('content');
-            const scrollSyncCheckbox = document.getElementById('scrollSync');
-
-            channel
-                .on('broadcast', { event: 'content_update' }, (payload) => {
-                    contentDiv.innerHTML = payload.payload.content;
-                })
-                .on('broadcast', { event: 'scroll_update' }, (payload) => {
-                    if (scrollSyncCheckbox.checked) {
-                        contentDiv.scrollTop = payload.payload.scrollPosition;
-                    }
-                })
-                .subscribe();
-        });
+      window.addEventListener("load", function () {
+        const supabaseUrl = "https://radtpoqypgqetijvopho.supabase.co";
+        const supabaseAnonKey ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
+        const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const channel = client.channel("shared_content");
+        const contentDiv = document.getElementById("content");
+        const scrollSyncCheckbox = document.getElementById("scrollSync");
+        channel
+          .on("broadcast", { event: "content_update" }, (payload) => {
+            contentDiv.innerHTML = payload.payload.content;
+          })
+          .on("broadcast", { event: "scroll_update" }, (payload) => {
+            if (scrollSyncCheckbox.checked) {
+              contentDiv.scrollTop = payload.payload.scrollPosition;
+            }
+          })
+          .subscribe();
+      });
     </script>
-</body>
+  </body>
 </html>
