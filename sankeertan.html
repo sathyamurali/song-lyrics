@@ -12,6 +12,7 @@
     </style>
   </head>
   <body>
+    <label><input type="checkbox" id="contentSync" checked> Content Sync</label><br>
     <label><input type="checkbox" id="scrollSync" /> Scroll Sync</label><br />
     <div id="content"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -23,6 +24,8 @@
         const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
         const contentDiv = document.getElementById("content");
         const scrollSyncCheckbox = document.getElementById("scrollSync");
+        const contentSyncCheckbox = document.getElementById('contentSync');
+
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -31,7 +34,9 @@
             .eq("id", 1)
             .single();
           if (data) {
-            contentDiv.innerHTML = data.content;
+            if (contentSyncCheckbox.checked){
+                contentDiv.innerHTML = data.content;
+            }
             contentDiv.scrollTop = data.scroll_position;
           }
         }
@@ -45,7 +50,7 @@
             (payload) => {
               //console.log("Postgres changes payload:", payload);
               if (payload.new.id === 1) {
-                if (payload.new.content !== undefined) {
+                if (payload.new.content !== undefined && contentSyncCheckbox.checked) {
                   contentDiv.innerHTML = payload.new.content;
                 }
                 if (payload.new.scroll_position !== undefined) {
