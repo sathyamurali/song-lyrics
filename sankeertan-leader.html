@@ -15,6 +15,7 @@
     <textarea id="contentInput" placeholder="Paste content here"></textarea
     ><br />
     <button id="sendContent">Send Content</button><br />
+    <label><input type="checkbox" id="scrollBroadcast" checked> Broadcast Scroll</label><br>
     <div id="content"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
@@ -25,6 +26,7 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
+        const scrollBroadcastCheckbox = document.getElementById('scrollBroadcast');
          // Initial data fetch
          async function fetchInitialData() {
             const { data, error } = await client.from('sankeertan').select('*').eq('id', 1).single();
@@ -42,7 +44,9 @@
         });
 
         contentDiv.addEventListener('scroll', async () => {
+          if (scrollBroadcastCheckbox.checked) {
             await client.from('sankeertan').upsert({ id: 1, scroll_position: contentDiv.scrollTop });
+          }
         });
 
         client.channel('sankeertan').on('UPDATE', (payload) => {
