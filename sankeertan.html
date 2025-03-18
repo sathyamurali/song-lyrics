@@ -46,6 +46,7 @@
         });
 
         client.channel('sankeertan').on('UPDATE', (payload) => {
+            console.log(payload);
             if(payload.new.id === 1){
                 contentDiv.innerHTML = payload.new.content;
                 contentDiv.scrollTop = payload.new.scroll_position;
