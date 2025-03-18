@@ -28,7 +28,7 @@
         const contentDiv = document.getElementById("content");
          // Initial data fetch
          async function fetchInitialData() {
-            const { data, error } = await supabase.from('shared_state').select('*').eq('id', 1).single();
+            const { data, error } = await client.from('sankeertan').select('*').eq('id', 1).single();
             if (data) {
                 contentDiv.innerHTML = data.content;
                 contentDiv.scrollTop = data.scroll_position;
