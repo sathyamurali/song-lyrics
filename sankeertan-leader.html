@@ -43,10 +43,10 @@
         });
 
         contentDiv.addEventListener('scroll', async () => {
-            await supabase.from('sankeertan').upsert({ id: 1, scroll_position: contentDiv.scrollTop });
+            await client.from('sankeertan').upsert({ id: 1, scroll_position: contentDiv.scrollTop });
         });
 
-         supabase.channel('sankeertan').on('UPDATE', (payload) => {
+        client.channel('sankeertan').on('UPDATE', (payload) => {
             if(payload.new.id === 1){
                 contentDiv.innerHTML = payload.new.content;
                 contentDiv.scrollTop = payload.new.scroll_position;
