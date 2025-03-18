@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Supabase Realtime Test</title>
+    <title>Follower - Supabase Realtime</title>
     <style>
         #content {
             width: 80%;
@@ -12,61 +12,35 @@
     </style>
 </head>
 <body>
-    <h1>Sankeertan</h1>
+    <h1>Follower - Supabase Realtime</h1>
 
-    <label><input type="checkbox" id="isLeader"> Leader</label><br>
-    <label><input type="checkbox" id="sendScroll"> Send Scroll</label><br>
-
-    <textarea id="contentInput" placeholder="Paste content here"></textarea><br>
-    <button id="sendContent">Send Content</button><br>
+    <label><input type="checkbox" id="scrollSync"> Scroll Sync</label><br>
 
     <div id="content"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
-    <script defer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
         window.addEventListener('load', function() {
-			const supabaseUrl = 'https://radtpoqypgqetijvopho.supabase.co';
+            const supabaseUrl = 'https://radtpoqypgqetijvopho.supabase.co';
 			const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k';
-            const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+				 
+            const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-            const channel = client.channel('shared_content');
-            const isLeaderCheckbox = document.getElementById('isLeader');
-            const sendScrollCheckbox = document.getElementById('sendScroll');
-            const contentInput = document.getElementById('contentInput');
-            const sendContentButton = document.getElementById('sendContent');
+            const channel = supabase.channel('shared_content');
             const contentDiv = document.getElementById('content');
+            const scrollSyncCheckbox = document.getElementById('scrollSync');
 
             channel
                 .on('broadcast', { event: 'content_update' }, (payload) => {
                     contentDiv.innerHTML = payload.payload.content;
                 })
                 .on('broadcast', { event: 'scroll_update' }, (payload) => {
-                    if (!isLeaderCheckbox.checked) {
+                    if (scrollSyncCheckbox.checked) {
                         contentDiv.scrollTop = payload.payload.scrollPosition;
                     }
                 })
                 .subscribe();
-
-            sendContentButton.addEventListener('click', () => {
-                channel.send({
-                    type: 'broadcast',
-                    event: 'content_update',
-                    payload: { content: contentInput.value },
-                });
-                contentDiv.innerHTML = contentInput.value;
-                contentInput.value = "";
-            });
-
-            contentDiv.addEventListener('scroll', () => {
-                if (isLeaderCheckbox.checked && sendScrollCheckbox.checked) {
-                    channel.send({
-                        type: 'broadcast',
-                        event: 'scroll_update',
-                        payload: { scrollPosition: contentDiv.scrollTop },
-                });
-            }
         });
-    });
     </script>
 </body>
 </html>
