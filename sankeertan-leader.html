@@ -19,7 +19,6 @@
     <label
       ><input type="checkbox" id="contentSync" checked /> Content Sync</label
     ><br />
-    <label><input type="checkbox" id="scrollSync" /> Scroll Sync</label><br />
     <label
       ><input type="checkbox" id="scrollBroadcast" /> Broadcast Scroll</label
     ><br />
@@ -34,8 +33,6 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const contentSyncCheckbox = document.getElementById("contentSync");
-        const scrollSyncCheckbox = document.getElementById("scrollSync");
         const scrollBroadcastCheckbox =document.getElementById("scrollBroadcast");
 
         function scrollToRow(id) {
@@ -84,13 +81,6 @@
                 if ( payload.new.content !== undefined && contentSyncCheckbox.checked) {
                   contentDiv.innerHTML = payload.new.content;
                   scrollToRow(payload.new.scroll_position);
-                }
-                if (payload.new.scroll_position !== undefined) {
-                  if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
-                    //scrollToRow(payload.new.scroll_position);
-                  } else if (!scrollSyncCheckbox) {
-                    //scrollToRow(payload.new.scroll_position);
-                  }
                 }
               }
             }
