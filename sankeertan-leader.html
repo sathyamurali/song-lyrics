@@ -30,7 +30,8 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const scrollBroadcastCheckbox = document.getElementById("scrollBroadcast");
+        const scrollBroadcastCheckbox =
+          document.getElementById("scrollBroadcast");
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -75,57 +76,71 @@
           })
           .subscribe();
 
-          function debounce(func, delay) {
-            let timeoutId;
-            return function(...args) {
-              clearTimeout(timeoutId);
-              timeoutId = setTimeout(() => {
-                func.apply(this, args);
-              }, delay);
-            };
-          }
-          async function sendScrollSync(idStr) {
-            console.log("here001::"+idStr);
-            if(scrollBroadcastCheckbox.checked){
-              const id = idStr.match(/\d+/g).map(Number)[0];
-              console.log("sending scroll id as ::"+id);
-              try {
-                await client.from('sankeertan').upsert({ id: 1, scroll_position: id });
-                console.log('Upsert successful'); // Add a log message
-              } catch (error) {
-                console.error('Upsert failed:', error); // Log the error
-              }
+        function debounce(func, delay) {
+          let timeoutId;
+          return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              func.apply(this, args);
+            }, delay);
+          };
+        }
+        async function sendScrollSync(idStr) {
+          console.log("here001::" + idStr);
+          if (scrollBroadcastCheckbox.checked) {
+            const id = idStr.match(/\d+/g).map(Number)[0];
+            console.log("sending scroll id as ::" + id);
+            try {
+              await client
+                .from("sankeertan")
+                .upsert({ id: 1, scroll_position: id });
+              console.log("Upsert successful"); // Add a log message
+            } catch (error) {
+              console.error("Upsert failed:", error); // Log the error
             }
           }
-          
-          const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
-          
-		function observeRows() {
-		  const observer = new IntersectionObserver((entries) => {
-			let topVisibleEntry = null;
+        }
 
-			entries.forEach((entry) => {
-			  if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
-				if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
-				  topVisibleEntry = entry;
-				}
-			  }
-			});
+        const debouncedSendForScrollSync = debounce(sendScrollSync, 1000);
 
-			if (topVisibleEntry) {
-			  const visibleRowId = topVisibleEntry.target.id;
-			  debouncedSendForScrollSync(visibleRowId);
-			} else {
-			  entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-				  const visibleRowId = entry.target.id;
-				  debouncedSendForScrollSync(visibleRowId);
-				  return;
-				}
-			  });
-			}
-		  }, { threshold: 0 });
-  
+        function observeRows() {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              let topVisibleEntry = null;
+
+              entries.forEach((entry) => {
+                if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
+                  if (
+                    !topVisibleEntry ||
+                    entry.boundingClientRect.top <
+                      topVisibleEntry.boundingClientRect.top
+                  ) {
+                    topVisibleEntry = entry;
+                  }
+                }
+              });
+
+              if (topVisibleEntry) {
+                const visibleRowId = topVisibleEntry.target.id;
+                debouncedSendForScrollSync(visibleRowId);
+              } else {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    const visibleRowId = entry.target.id;
+                    debouncedSendForScrollSync(visibleRowId);
+                    return;
+                  }
+                });
+              }
+            },
+            { threshold: 0 }
+          );
+
+          const rows = document.querySelectorAll("tr[id]");
+          rows.forEach((row) => {
+            observer.observe(row);
+          });
+        }
       });
     </script>
   </body>
