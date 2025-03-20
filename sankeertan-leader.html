@@ -41,7 +41,7 @@
           if (data) {
             contentDiv.innerHTML = data.content;
             contentDiv.scrollTop = data.scroll_position;
-            windows.setTimeout(observeRows,100);
+            setTimeout(observeRows,100);
           }
         }
         fetchInitialData();
