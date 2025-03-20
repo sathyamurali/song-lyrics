@@ -88,7 +88,7 @@
             console.log("here001::"+idStr);
             if(scrollBroadcastCheckbox.checked){
               const id = idStr.match(/\d+/g).map(Number)[0];
-              console.log("here002::"+id);
+              console.log("sending scroll id as ::"+id);
               try {
                 await client.from('sankeertan').upsert({ id: 1, scroll_position: id });
                 console.log('Upsert successful'); // Add a log message
