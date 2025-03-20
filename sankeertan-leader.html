@@ -85,8 +85,10 @@
             };
           }
           function sendScrollSync(idStr) {
+            if(&& scrollBroadcastCheckbox.checked){
               const id = idStr.match(/\d+/g).map(Number)[0];
               client.from('sankeertan').upsert({ id: 1, scroll_position: id });
+            }
           }
           
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
@@ -95,7 +97,7 @@
             debugger;
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                  if (entry.isIntersecting && scrollBroadcastCheckbox.checked) {
+                  if (entry.isIntersecting) {
                     const visibleRowId = entry.target.id;
                     debouncedSendForScrollSync(visibleRowId); 
                   }
