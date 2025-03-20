@@ -121,17 +121,18 @@ function observeRows() {
 
     console.log('Reversed Entries:', reversedEntries.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log reversed entries
 
-	reversedEntries.forEach((entry) => {
+reversedEntries.forEach((entry) => {
     if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
-      console.log('Entry:', entry.target.id, entry.boundingClientRect.top); // Log entry values
-      console.log('topVisibleEntry:', topVisibleEntry ? topVisibleEntry.target.id : null); // Log topVisibleEntry
+        console.log('Entry:', entry.target.id, entry.boundingClientRect.top); // Log entry values
+        console.log('topVisibleEntry:', topVisibleEntry ? topVisibleEntry.target.id : null); // Log topVisibleEntry
 
-      if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
-        topVisibleEntry = entry;
-        console.log('New Top Visible Entry:', entry.target.id, entry.boundingClientRect.top); // Log new top visible entry
-      }
+        if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
+            topVisibleEntry = entry;
+            console.log('New Top Visible Entry:', entry.target.id, entry.boundingClientRect.top); // Log new top visible entry
+        }
     }
-  });
+});
+
 
     if (topVisibleEntry) {
       const visibleRowId = topVisibleEntry.target.id;
