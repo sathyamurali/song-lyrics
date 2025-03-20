@@ -89,7 +89,12 @@
             if(scrollBroadcastCheckbox.checked){
               const id = idStr.match(/\d+/g).map(Number)[0];
               console.log("here002::"+id);
-              await client.from('sankeertan').upsert({ id: 1, scroll_position: id });
+              try {
+                await client.from('sankeertan').upsert({ id: 1, scroll_position: id });
+                console.log('Upsert successful'); // Add a log message
+              } catch (error) {
+                console.error('Upsert failed:', error); // Log the error
+              }
             }
           }
           
