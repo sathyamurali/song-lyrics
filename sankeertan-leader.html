@@ -5,7 +5,7 @@
     <style>
       #content {
         width: 80%;
-        height: 500px;
+        height: 600px;
         border: 1px solid #ccc;
         overflow-y: auto;
       }
@@ -86,15 +86,12 @@
           };
         }
         async function sendScrollSync(idStr) {
-          console.log("here001::" + idStr);
           if (scrollBroadcastCheckbox.checked) {
             const id = idStr.match(/\d+/g).map(Number)[0];
-            console.log("sending scroll id as ::" + id);
             try {
               await client
                 .from("sankeertan")
                 .upsert({ id: 1, scroll_position: id });
-              console.log("Upsert successful"); // Add a log message
             } catch (error) {
               console.error("Upsert failed:", error); // Log the error
             }
@@ -104,90 +101,43 @@
         const debouncedSendForScrollSync = debounce(sendScrollSync, 1000);
 
         function observeRows() {
-          const observer = new IntersectionObserver(
-            (entries) => {
-              let topVisibleEntry = null;
+          const sections = document.querySelectorAll("tr[id]");
+          const options = {
+            root: null, // Use the viewport as the root
+            rootMargin: "0px",
+            threshold: 0.5, // Trigger when 50% of the element is visible
+          };
 
-              // Create a deep copy of entries
-              const entriesCopy = entries.map((entry) => ({
-                target: entry.target,
-                isIntersecting: entry.isIntersecting,
-                boundingClientRect: { ...entry.boundingClientRect },
-                intersectionRatio: entry.intersectionRatio,
-                intersectionRect: { ...entry.intersectionRect },
-                rootBounds: entry.rootBounds ? { ...entry.rootBounds } : null,
-                time: entry.time,
-              }));
-
-              console.log(
-                "Original Entries:",
-                entriesCopy.map((e) => ({
-                  id: e.target.id,
-                  top: e.boundingClientRect.top,
-                }))
-              ); // Log original entries
-
-              const reversedEntries = [...entriesCopy].reverse();
-
-              console.log(
-                "Reversed Entries:",
-                reversedEntries.map((e) => ({
-                  id: e.target.id,
-                  top: e.boundingClientRect.top,
-                }))
-              ); // Log reversed entries
-
-              entriesCopy.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  console.log(
-                    "Entry:",
-                    entry.target.id,
-                    entry.boundingClientRect
-                  ); // Log entry values
-                  console.log(
-                    "topVisibleEntry:",
-                    topVisibleEntry ? topVisibleEntry.target.id : null
-                  ); // Log topVisibleEntry
-
-                  if (
-                    !topVisibleEntry ||
-                    (entry.boundingClientRect &&
-                      entry.boundingClientRect.top !== undefined &&
-                      (!topVisibleEntry ||
-                        !topVisibleEntry.boundingClientRect ||
-                        topVisibleEntry.boundingClientRect.top === undefined ||
-                        entry.boundingClientRect.top <
-                          topVisibleEntry.boundingClientRect.top))
-                  ) {
-                    topVisibleEntry = entry;
-                    console.log(
-                      "New Top Visible Entry:",
-                      entry.target.id,
-                      entry.boundingClientRect.top
-                    );
-                  }
-                }
-              });
-
-              if (topVisibleEntry) {
-                const visibleRowId = topVisibleEntry.target.id;
-                debouncedSendForScrollSync(visibleRowId);
+          const visibleElements = new Set();
+          let topElementId = null;
+          const callback = (entries, observer) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                visibleElements.add(entry.target);
               } else {
-                entriesCopy.forEach((entry) => {
-                  if (entry.isIntersecting) {
-                    const visibleRowId = entry.target.id;
-                    debouncedSendForScrollSync(visibleRowId);
-                    return;
-                  }
-                });
+                visibleElements.delete(entry.target);
               }
-            },
-            { threshold: 0 }
-          );
+            });
 
-          const rows = document.querySelectorAll("tr[id]");
-          rows.forEach((row) => {
-            observer.observe(row);
+            // Find the topmost visible element
+            let newTopElementId = null;
+            let newTopElementPosition = Infinity;
+
+            visibleElements.forEach((element) => {
+              const rect = element.getBoundingClientRect();
+              if (rect.top >= 0 && rect.top < newTopElementPosition) {
+                newTopElementPosition = rect.top;
+                newTopElementId = element.id;
+              }
+            });
+            if (newTopElementId && newTopElementId !== topElementId) {
+              topElementId = newTopElementId;
+              debouncedSendForScrollSync(topElementId);
+            }
+          };
+          const observer = new IntersectionObserver(callback, options);
+          sections.forEach((section) => {
+            observer.observe(section);
           });
         }
       });
