@@ -55,7 +55,7 @@
           observeRows();
         });
 
-        contentDiv.addEventListener("scroll", async () => {
+        /*contentDiv.addEventListener("scroll", async () => {
           return;
           if (scrollBroadcastCheckbox.checked) {
             await client
@@ -63,7 +63,7 @@
               .upsert({ id: 1, scroll_position: contentDiv.scrollTop });
           }
         });
-
+        */
         client
           .channel("sankeertan")
           .on("UPDATE", (payload) => {
@@ -86,14 +86,12 @@
           }
           function sendScrollSync(idStr) {
               const id = idStr.match(/\d+/g).map(Number)[0];
-              console.log(id);
               client.from('sankeertan').upsert({ id: 1, scroll_position: id });
           }
           
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
           
           function observeRows() {
-              debugger;
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                   if (entry.isIntersecting && scrollBroadcastCheckbox) {
