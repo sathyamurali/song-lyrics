@@ -16,47 +16,105 @@
     <textarea id="contentInput" placeholder="Paste content here"></textarea
     ><br />
     <button id="sendContent">Send Content</button><br />
-    <label><input type="checkbox" id="scrollBroadcast"> Broadcast Scroll</label><br>
+    <label
+      ><input type="checkbox" id="scrollBroadcast" /> Broadcast Scroll</label
+    ><br />
     <div id="content"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
       window.addEventListener("load", function () {
         const supabaseUrl = "https://radtpoqypgqetijvopho.supabase.co";
-        const supabaseAnonKey ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
+        const supabaseAnonKey =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
         const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const scrollBroadcastCheckbox = document.getElementById('scrollBroadcast');
-         // Initial data fetch
-         async function fetchInitialData() {
-            const { data, error } = await client.from('sankeertan').select('*').eq('id', 1).single();
-            if (data) {
-                contentDiv.innerHTML = data.content;
-                contentDiv.scrollTop = data.scroll_position;
-            }
+        const scrollBroadcastCheckbox =
+          document.getElementById("scrollBroadcast");
+        // Initial data fetch
+        async function fetchInitialData() {
+          const { data, error } = await client
+            .from("sankeertan")
+            .select("*")
+            .eq("id", 1)
+            .single();
+          if (data) {
+            contentDiv.innerHTML = data.content;
+            contentDiv.scrollTop = data.scroll_position;
+            observeRows();
+          }
         }
         fetchInitialData();
 
-        sendContentButton.addEventListener('click', async () => {
-            await client.from('sankeertan').upsert({ id: 1, content: contentInput.value });
-            contentDiv.innerHTML = contentInput.value;
-            contentInput.value = "";
+        sendContentButton.addEventListener("click", async () => {
+          await client
+            .from("sankeertan")
+            .upsert({ id: 1, content: contentInput.value });
+          contentDiv.innerHTML = contentInput.value;
+          contentInput.value = "";
+          observeRows();
         });
 
-        contentDiv.addEventListener('scroll', async () => {
+        contentDiv.addEventListener("scroll", async () => {
+          return;
           if (scrollBroadcastCheckbox.checked) {
-            await client.from('sankeertan').upsert({ id: 1, scroll_position: contentDiv.scrollTop });
+            await client
+              .from("sankeertan")
+              .upsert({ id: 1, scroll_position: contentDiv.scrollTop });
           }
         });
 
-        client.channel('sankeertan').on('UPDATE', (payload) => {
-            if(payload.new.id === 1){
-                contentDiv.innerHTML = payload.new.content;
-                contentDiv.scrollTop = payload.new.scroll_position;
+        client
+          .channel("sankeertan")
+          .on("UPDATE", (payload) => {
+            if (payload.new.id === 1) {
+              contentDiv.innerHTML = payload.new.content;
+              contentDiv.scrollTop = payload.new.scroll_position;
+              observeRows();
             }
-        }).subscribe();        
+          })
+          .subscribe();
 
+          function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+              clearTimeout(timeoutId);
+              timeoutId = setTimeout(() => {
+                func.apply(this, args);
+              }, delay);
+            };
+          }
+          function sendScrollSync(idStr) {
+              const id = idStr.match(/\d+/g).map(Number)[0];
+              console.log(id);
+              if(!appGlobalDataSASSL.supabaseclient){
+                console.log("no supabase client error");
+              }
+              else{
+                //debugger;
+                //appGlobalDataSASSL.supabaseclient.from('sankeertan').upsert({ id: 1, scroll_position: id });
+              }
+          
+          }
+          
+          const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
+          
+          function observeRows() {
+              const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    const visibleRowId = entry.target.id;
+                    debouncedSendForScrollSync(visibleRowId); 
+                  }
+                });
+              }, { threshold: 0.1 });
+              const rows = $('tr[id]');
+              rows.each(function() {
+                observer.observe(this);
+              });
+          }
+                    
       });
     </script>
   </body>
