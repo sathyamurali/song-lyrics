@@ -94,7 +94,7 @@
           function observeRows() {
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                  if (entry.isIntersecting && scrollBroadcastCheckbox) {
+                  if (entry.isIntersecting && scrollBroadcastCheckbox.checked) {
                     const visibleRowId = entry.target.id;
                     debouncedSendForScrollSync(visibleRowId); 
                   }
