@@ -100,51 +100,32 @@
           
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
           
-          function observeRows() {
-              const observer = new IntersectionObserver((entries) => {
-								
+		function observeRows() {
+		  const observer = new IntersectionObserver((entries) => {
+			let topVisibleEntry = null;
 
-                entries.forEach((entry) => {
-                  if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
-																																															  
-							 
-	   
-	 
-		
+			entries.forEach((entry) => {
+			  if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
+				if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
+				  topVisibleEntry = entry;
+				}
+			  }
+			});
 
-																   
-																			
-														  
-																	 
-			 
-								
-						  
-						   
-									 
-	   
-			 
-																	   
-								
-								 
-                    const visibleRowId = entry.target.id;
-                    //console.log(visibleRowId);
-																	  
-			  
-                    debouncedSendForScrollSync(visibleRowId); 
-						   
-							
-									  
-		
-																		   
-                  }
-                });
-	  
-              }, { threshold: 0 });
-              const rows = document.querySelectorAll('tr[id]');
-              rows.forEach(row => {
-                  observer.observe(row);
-              });
-          }
+			if (topVisibleEntry) {
+			  const visibleRowId = topVisibleEntry.target.id;
+			  debouncedSendForScrollSync(visibleRowId);
+			} else {
+			  entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+				  const visibleRowId = entry.target.id;
+				  debouncedSendForScrollSync(visibleRowId);
+				  return;
+				}
+			  });
+			}
+		  }, { threshold: 0 });
+  
       });
     </script>
   </body>
