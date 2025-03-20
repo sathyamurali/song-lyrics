@@ -173,7 +173,7 @@
                 const visibleRowId = topVisibleEntry.target.id;
                 debouncedSendForScrollSync(visibleRowId);
               } else {
-                reversedEntries.forEach((entry) => {
+                entriesCopy.forEach((entry) => {
                   if (entry.isIntersecting) {
                     const visibleRowId = entry.target.id;
                     debouncedSendForScrollSync(visibleRowId);
