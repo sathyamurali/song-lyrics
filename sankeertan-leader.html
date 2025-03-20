@@ -99,6 +99,7 @@
                 entries.forEach((entry) => {
                   if (entry.isIntersecting) {
                     const visibleRowId = entry.target.id;
+                    console.log(visibleRowId);
                     debouncedSendForScrollSync(visibleRowId); 
                   }
                 });
