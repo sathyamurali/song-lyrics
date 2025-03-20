@@ -88,14 +88,7 @@
           function sendScrollSync(idStr) {
               const id = idStr.match(/\d+/g).map(Number)[0];
               console.log(id);
-              if(!appGlobalDataSASSL.supabaseclient){
-                console.log("no supabase client error");
-              }
-              else{
-                //debugger;
-                //appGlobalDataSASSL.supabaseclient.from('sankeertan').upsert({ id: 1, scroll_position: id });
-              }
-          
+              client.from('sankeertan').upsert({ id: 1, scroll_position: id });
           }
           
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
