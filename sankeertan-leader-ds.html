@@ -5,7 +5,7 @@
     <style>
       #content {
         width: 80%;
-        height: 500px;
+        height: 600px;
         border: 1px solid #ccc;
         overflow-y: auto;
       }
@@ -86,15 +86,12 @@
           };
         }
         async function sendScrollSync(idStr) {
-          console.log("here001::" + idStr);
           if (scrollBroadcastCheckbox.checked) {
             const id = idStr.match(/\d+/g).map(Number)[0];
-            console.log("sending scroll id as ::" + id);
             try {
               await client
                 .from("sankeertan")
                 .upsert({ id: 1, scroll_position: id });
-              console.log("Upsert successful"); // Add a log message
             } catch (error) {
               console.error("Upsert failed:", error); // Log the error
             }
@@ -104,10 +101,7 @@
         const debouncedSendForScrollSync = debounce(sendScrollSync, 1000);
 
         function observeRows() {
-          // Select all <tr> elements with IDs
           const sections = document.querySelectorAll("tr[id]");
-
-          // Options for the IntersectionObserver
           const options = {
             root: null, // Use the viewport as the root
             rootMargin: "0px",
@@ -116,14 +110,11 @@
 
           const visibleElements = new Set();
           let topElementId = null;
-          // Callback function for the IntersectionObserver
           const callback = (entries, observer) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                // Add the element to the visible set
                 visibleElements.add(entry.target);
               } else {
-                // Remove the element from the visible set
                 visibleElements.delete(entry.target);
               }
             });
@@ -139,18 +130,12 @@
                 newTopElementId = element.id;
               }
             });
-
-            // Update the topmost element if a new one is found
             if (newTopElementId && newTopElementId !== topElementId) {
               topElementId = newTopElementId;
               debouncedSendForScrollSync(topElementId);
             }
           };
-
-          // Create the IntersectionObserver
           const observer = new IntersectionObserver(callback, options);
-
-          // Observe each <tr> section
           sections.forEach((section) => {
             observer.observe(section);
           });
