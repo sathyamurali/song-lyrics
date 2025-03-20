@@ -114,23 +114,25 @@
             threshold: 0.5, // Trigger when 50% of the element is visible
           };
 
+			let topElementId = null;
           // Callback function for the IntersectionObserver
           const callback = (entries, observer) => {
-            let topElementId = null;
-            let topElementPosition = Infinity;
+            let newTopElementId = null;
+			let newTopElementPosition = Infinity;
+
 
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 const rect = entry.target.getBoundingClientRect();
-                if (rect.top < topElementPosition) {
-                  topElementPosition = rect.top;
-                  topElementId = entry.target.id;
-                }
+                if (rect.top >= 0 && rect.top < newTopElementPosition) {
+					newTopElementPosition = rect.top;
+					newTopElementId = entry.target.id;
+				}
               }
             });
 
-            if (topElementId) {
-              // Send the topmost element ID using the debounced function
+            if (newTopElementId && newTopElementId !== topElementId) {
+			topElementId = newTopElementId;
               debouncedSendForScrollSync(topElementId);
             }
           };
