@@ -126,7 +126,7 @@ function observeRows() {
 		console.log("-----------")
 		console.log(entry.boundingClientRect.top);
 		console.log("=============")
-		if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
+		if (entry.isIntersecting) {
 		  console.log('Entry:', entry.target.id, entry.boundingClientRect.top); // Log entry values
 		  console.log('topVisibleEntry:', topVisibleEntry ? topVisibleEntry.target.id : null); // Log topVisibleEntry
 		  
