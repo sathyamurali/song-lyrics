@@ -101,46 +101,49 @@
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
           
           function observeRows() {
-			const observer = new IntersectionObserver((entries) => {
-			  let topVisibleEntry = null;
+              const observer = new IntersectionObserver((entries) => {
+								
 
-			  entries.forEach((entry) => {
-				if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
-				  if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
-					topVisibleEntry = entry;
-				  }
-				}
-			  });
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
+																																															  
+							 
+	   
+	 
+		
 
-			  if (topVisibleEntry) { // Check if topVisibleEntry is not null
-				const visibleRowId = topVisibleEntry.target.id;
-				const rowHeight = topVisibleEntry.target.offsetHeight;
-				const viewportHeight = window.innerHeight;
-				debugger;
-				debouncedSendForScrollSync({
-				  rowId: visibleRowId,
-				  rowHeight: rowHeight,
-				  viewportHeight: viewportHeight,
-				});
-			  } else {
-				// If no top visible row is found, send the first intersecting row.
-				entries.forEach((entry) => {
-				  if (entry.isIntersecting) {
-					const visibleRowId = entry.target.id;
-					const rowHeight = entry.target.offsetHeight;
-					const viewportHeight = window.innerHeight;
-					debugger;
-					debouncedSendForScrollSync({
-					  rowId: visibleRowId,
-					  rowHeight: rowHeight,
-					  viewportHeight: viewportHeight,
-					});
-					return; // stop after first intersecting row.
-				  }
-				});
-			  }
-			}, { threshold: 0 });
-
+																   
+																			
+														  
+																	 
+			 
+								
+						  
+						   
+									 
+	   
+			 
+																	   
+								
+								 
+                    const visibleRowId = entry.target.id;
+                    //console.log(visibleRowId);
+																	  
+			  
+                    debouncedSendForScrollSync(visibleRowId); 
+						   
+							
+									  
+		
+																		   
+                  }
+                });
+	  
+              }, { threshold: 0 });
+              const rows = document.querySelectorAll('tr[id]');
+              rows.forEach(row => {
+                  observer.observe(row);
+              });
           }
       });
     </script>
