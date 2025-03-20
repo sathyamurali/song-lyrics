@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sankeertan</title>
+    <style>
+      #content {
+        width: 80%;
+        height: 500px;
+        border: 1px solid #ccc;
+        overflow-y: auto;
+      }
+    </style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <textarea id="contentInput" placeholder="Paste content here"></textarea
+    ><br />
+    <button id="sendContent">Send Content</button><br />
+    <label
+      ><input type="checkbox" id="scrollBroadcast" /> Broadcast Scroll</label
+    ><br />
+    <div id="content"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        const supabaseUrl = "https://radtpoqypgqetijvopho.supabase.co";
+        const supabaseAnonKey =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
+        const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const contentInput = document.getElementById("contentInput");
+        const sendContentButton = document.getElementById("sendContent");
+        const contentDiv = document.getElementById("content");
+        const scrollBroadcastCheckbox =
+          document.getElementById("scrollBroadcast");
+        // Initial data fetch
+        async function fetchInitialData() {
+          const { data, error } = await client
+            .from("sankeertan")
+            .select("*")
+            .eq("id", 1)
+            .single();
+          if (data) {
+            contentDiv.innerHTML = data.content;
+            contentDiv.scrollTop = data.scroll_position;
+            setTimeout(observeRows, 100);
+          }
+        }
+        fetchInitialData();
+
+        sendContentButton.addEventListener("click", async () => {
+          await client
+            .from("sankeertan")
+            .upsert({ id: 1, content: contentInput.value });
+          contentDiv.innerHTML = contentInput.value;
+          contentInput.value = "";
+          setTimeout(observeRows, 100);
+        });
+
+        /*contentDiv.addEventListener("scroll", async () => {
+          return;
+          if (scrollBroadcastCheckbox.checked) {
+            await client
+              .from("sankeertan")
+              .upsert({ id: 1, scroll_position: contentDiv.scrollTop });
+          }
+        });
+        */
+        client
+          .channel("sankeertan")
+          .on("UPDATE", (payload) => {
+            if (payload.new.id === 1) {
+              contentDiv.innerHTML = payload.new.content;
+              contentDiv.scrollTop = payload.new.scroll_position;
+              setTimeout(observeRows, 100);
+            }
+          })
+          .subscribe();
+
+        function debounce(func, delay) {
+          let timeoutId;
+          return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              func.apply(this, args);
+            }, delay);
+          };
+        }
+        async function sendScrollSync(idStr) {
+          console.log("here001::" + idStr);
+          if (scrollBroadcastCheckbox.checked) {
+            const id = idStr.match(/\d+/g).map(Number)[0];
+            console.log("sending scroll id as ::" + id);
+            try {
+              await client
+                .from("sankeertan")
+                .upsert({ id: 1, scroll_position: id });
+              console.log("Upsert successful"); // Add a log message
+            } catch (error) {
+              console.error("Upsert failed:", error); // Log the error
+            }
+          }
+        }
+
+        const debouncedSendForScrollSync = debounce(sendScrollSync, 1000);
+
+        function observeRows() {
+          // Select all <tr> elements with IDs
+          const sections = document.querySelectorAll("tr[id]");
+
+          // Options for the IntersectionObserver
+          const options = {
+            root: null, // Use the viewport as the root
+            rootMargin: "0px",
+            threshold: 0.5, // Trigger when 50% of the element is visible
+          };
+
+          // Callback function for the IntersectionObserver
+          const callback = (entries, observer) => {
+            let topElementId = null;
+            let topElementPosition = Infinity;
+
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const rect = entry.target.getBoundingClientRect();
+                if (rect.top < topElementPosition) {
+                  topElementPosition = rect.top;
+                  topElementId = entry.target.id;
+                }
+              }
+            });
+
+            if (topElementId) {
+              // Send the topmost element ID using the debounced function
+              debouncedSendForScrollSync(topElementId);
+            }
+          };
+
+          // Create the IntersectionObserver
+          const observer = new IntersectionObserver(callback, options);
+
+          // Observe each <tr> section
+          sections.forEach((section) => {
+            observer.observe(section);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
