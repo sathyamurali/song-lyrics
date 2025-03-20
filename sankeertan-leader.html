@@ -110,7 +110,7 @@
                   }
                 });
               }, { threshold: 0.1 });
-              const rows = $('tr[id]');
+              const rows = document.querySelectorAll('tr[id]');
               rows.each(function() {
                 observer.observe(this);
               });
