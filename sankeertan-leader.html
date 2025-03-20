@@ -85,8 +85,10 @@
             };
           }
           function sendScrollSync(idStr) {
+            console.log("here001"+idStr);
             if(scrollBroadcastCheckbox.checked){
               const id = idStr.match(/\d+/g).map(Number)[0];
+              console.log("here002"+id);
               client.from('sankeertan').upsert({ id: 1, scroll_position: id });
             }
           }
