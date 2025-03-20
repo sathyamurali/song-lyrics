@@ -30,8 +30,7 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const scrollBroadcastCheckbox =
-          document.getElementById("scrollBroadcast");
+        const scrollBroadcastCheckbox = document.getElementById("scrollBroadcast");
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -97,7 +96,7 @@
               debugger;
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                  if (entry.isIntersecting) {
+                  if (entry.isIntersecting && scrollBroadcastCheckbox) {
                     const visibleRowId = entry.target.id;
                     debouncedSendForScrollSync(visibleRowId); 
                   }
