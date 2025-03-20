@@ -96,12 +96,11 @@
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
           
           function observeRows() {
-            debugger;
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                   if (entry.isIntersecting) {
                     const visibleRowId = entry.target.id;
-                    console.log(visibleRowId);
+                    //console.log(visibleRowId);
                     debouncedSendForScrollSync(visibleRowId); 
                   }
                 });
