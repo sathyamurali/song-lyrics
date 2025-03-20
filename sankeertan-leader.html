@@ -17,6 +17,9 @@
     ><br />
     <button id="sendContent">Send Content</button><br />
     <label
+      ><input type="checkbox" id="contentSync" checked /> Content Sync</label
+    ><br />
+    <label
       ><input type="checkbox" id="scrollBroadcast" /> Broadcast Scroll</label
     ><br />
     <div id="content"></div>
@@ -30,8 +33,8 @@
         const contentInput = document.getElementById("contentInput");
         const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const scrollBroadcastCheckbox =
-          document.getElementById("scrollBroadcast");
+        const contentSyncCheckbox = document.getElementById("contentSync");
+        const scrollBroadcastCheckbox =document.getElementById("scrollBroadcast");
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -41,7 +44,7 @@
             .single();
           if (data) {
             contentDiv.innerHTML = data.content;
-            contentDiv.scrollTop = data.scroll_position;
+            scrollToRow(data.scroll_position);
             setTimeout(observeRows, 100);
           }
         }
@@ -51,30 +54,33 @@
           await client
             .from("sankeertan")
             .upsert({ id: 1, content: contentInput.value });
-          contentDiv.innerHTML = contentInput.value;
-          contentInput.value = "";
-          setTimeout(observeRows, 100);
+         // contentDiv.innerHTML = contentInput.value;
+         // contentInput.value = "";
+         //setTimeout(observeRows, 100);
         });
 
-        /*contentDiv.addEventListener("scroll", async () => {
-          return;
-          if (scrollBroadcastCheckbox.checked) {
-            await client
-              .from("sankeertan")
-              .upsert({ id: 1, scroll_position: contentDiv.scrollTop });
-          }
-        });
-        */
         client
           .channel("sankeertan")
-          .on("UPDATE", (payload) => {
-            if (payload.new.id === 1) {
-              contentDiv.innerHTML = payload.new.content;
-              contentDiv.scrollTop = payload.new.scroll_position;
-              setTimeout(observeRows, 100);
+          .on(
+            "postgres_changes",
+            { event: "UPDATE", schema: "public", table: "sankeertan" },
+            (payload) => {
+              if (payload.new.id === 1) {
+                if ( payload.new.content !== undefined && contentSyncCheckbox.checked) {
+                  contentDiv.innerHTML = payload.new.content;
+                  scrollToRow(payload.new.scroll_position);
+                }
+                if (payload.new.scroll_position !== undefined) {
+                  if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
+                    scrollToRow(payload.new.scroll_position);
+                  } else if (!scrollSyncCheckbox) {
+                    scrollToRow(payload.new.scroll_position);
+                  }
+                }
+              }
             }
-          })
-          .subscribe();
+          )
+          .subscribe();+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         function debounce(func, delay) {
           let timeoutId;
