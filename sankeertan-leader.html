@@ -115,12 +115,18 @@ function observeRows() {
       time: entry.time,
     }));
 
+    console.log('Original Entries:', entriesCopy.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log original entries
+
     const reversedEntries = [...entriesCopy].reverse();
+
+    console.log('Reversed Entries:', reversedEntries.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log reversed entries
 
     reversedEntries.forEach((entry) => {
       if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
+        console.log('Processing Entry:', entry.target.id, entry.boundingClientRect.top); // Log processing entries
         if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
           topVisibleEntry = entry;
+          console.log('New Top Visible Entry:', entry.target.id, entry.boundingClientRect.top); // Log new top visible entry
         }
       }
     });
