@@ -114,26 +114,35 @@
             threshold: 0.5, // Trigger when 50% of the element is visible
           };
 
-			let topElementId = null;
+          const visibleElements = new Set();
+          let topElementId = null;
           // Callback function for the IntersectionObserver
           const callback = (entries, observer) => {
-            let newTopElementId = null;
-			let newTopElementPosition = Infinity;
-
-
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                const rect = entry.target.getBoundingClientRect();
-				console.log(entry.target.id+"||"+rect.top+"||"+newTopElementId+"||"+newTopElementPosition);
-                if (rect.top >= 0 && rect.top < newTopElementPosition) {
-					newTopElementPosition = rect.top;
-					newTopElementId = entry.target.id;
-				}
+                // Add the element to the visible set
+                visibleElements.add(entry.target);
+              } else {
+                // Remove the element from the visible set
+                visibleElements.delete(entry.target);
               }
             });
 
+            // Find the topmost visible element
+            let newTopElementId = null;
+            let newTopElementPosition = Infinity;
+
+            visibleElements.forEach((element) => {
+              const rect = element.getBoundingClientRect();
+              if (rect.top >= 0 && rect.top < newTopElementPosition) {
+                newTopElementPosition = rect.top;
+                newTopElementId = element.id;
+              }
+            });
+
+            // Update the topmost element if a new one is found
             if (newTopElementId && newTopElementId !== topElementId) {
-			topElementId = newTopElementId;
+              topElementId = newTopElementId;
               debouncedSendForScrollSync(topElementId);
             }
           };
@@ -143,9 +152,7 @@
 
           // Observe each <tr> section
           sections.forEach((section) => {
-		  console.log("----------------");
             observer.observe(section);
-		  console.log("==================")	
           });
         }
       });
