@@ -124,8 +124,7 @@
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 const rect = entry.target.getBoundingClientRect();
-				console.log(rect.top+"||"+newTopElementPosition);
-				console.log("newTopElementId:"+newTopElementId)
+				console.log(entry.target.id+"||"+rect.top+"||"+newTopElementId+"||"+newTopElementPosition);
                 if (rect.top >= 0 && rect.top < newTopElementPosition) {
 					newTopElementPosition = rect.top;
 					newTopElementId = entry.target.id;
