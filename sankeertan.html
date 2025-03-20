@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Follower - Sankeertan</title>
+    <title>Sankeertan</title>
     <style>
       #content {
         width: 80%;
@@ -13,10 +13,15 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   </head>
   <body>
+    <textarea id="contentInput" placeholder="Paste content here"></textarea
+    ><br />
+    <button id="sendContent">Send Content</button><br />
     <label
       ><input type="checkbox" id="contentSync" checked /> Content Sync</label
     ><br />
-    <label><input type="checkbox" id="scrollSync" /> Scroll Sync</label><br />
+    <label
+      ><input type="checkbox" id="scrollBroadcast" /> Broadcast Scroll</label
+    ><br />
     <div id="content"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
@@ -25,12 +30,13 @@
         const supabaseAnonKey =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZHRwb3F5cGdxZXRpanZvcGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODAwNjAsImV4cCI6MjA1NzM1NjA2MH0.dAIWitCyN4TVv3n4PTvhqJlUXsAGVSjOPm-L2jw818k";
         const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const contentInput = document.getElementById("contentInput");
+        const sendContentButton = document.getElementById("sendContent");
         const contentDiv = document.getElementById("content");
-        const scrollSyncCheckbox = document.getElementById("scrollSync");
-        const contentSyncCheckbox = document.getElementById("contentSync");
+        const scrollBroadcastCheckbox =document.getElementById("scrollBroadcast");
 
         function scrollToRow(id) {
-          console.log("received scroll id as:" + id);
+          //console.log("received scroll id as:" + id);
           const rowElement = document.getElementById("trRowAsAnchor-" + id);
           if (rowElement) {
             rowElement.scrollIntoView({
@@ -41,7 +47,6 @@
             console.warn("Row element not found:", rowId);
           }
         }
-
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -50,13 +55,21 @@
             .eq("id", 1)
             .single();
           if (data) {
-            if (contentSyncCheckbox.checked) {
-              contentDiv.innerHTML = data.content;
-            }
-            contentDiv.scrollTop = data.scroll_position;
+            contentDiv.innerHTML = data.content;
+            scrollToRow(data.scroll_position);
+            setTimeout(observeRows, 100);
           }
         }
         fetchInitialData();
+
+        sendContentButton.addEventListener("click", async () => {
+          await client
+            .from("sankeertan")
+            .upsert({ id: 1, content: contentInput.value });
+         // contentDiv.innerHTML = contentInput.value;
+         // contentInput.value = "";
+         //setTimeout(observeRows, 100);
+        });
 
         client
           .channel("sankeertan")
@@ -69,17 +82,75 @@
                   contentDiv.innerHTML = payload.new.content;
                   scrollToRow(payload.new.scroll_position);
                 }
-                if (payload.new.scroll_position !== undefined) {
-                  if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
-                    scrollToRow(payload.new.scroll_position);
-                  } else if (!scrollSyncCheckbox) {
-                    scrollToRow(payload.new.scroll_position);
-                  }
-                }
               }
             }
           )
           .subscribe();
+
+        function debounce(func, delay) {
+          let timeoutId;
+          return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              func.apply(this, args);
+            }, delay);
+          };
+        }
+        async function sendScrollSync(idStr) {
+          if (scrollBroadcastCheckbox.checked) {
+            const id = idStr.match(/\d+/g).map(Number)[0];
+            try {
+              await client
+                .from("sankeertan")
+                .upsert({ id: 1, scroll_position: id });
+            } catch (error) {
+              console.error("Upsert failed:", error); // Log the error
+            }
+          }
+        }
+
+        const debouncedSendForScrollSync = debounce(sendScrollSync, 1000);
+
+        function observeRows() {
+          const sections = document.querySelectorAll("tr[id]");
+          const options = {
+            root: null, // Use the viewport as the root
+            rootMargin: "0px",
+            threshold: 0.5, // Trigger when 50% of the element is visible
+          };
+
+          const visibleElements = new Set();
+          let topElementId = null;
+          const callback = (entries, observer) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                visibleElements.add(entry.target);
+              } else {
+                visibleElements.delete(entry.target);
+              }
+            });
+
+            // Find the topmost visible element
+            let newTopElementId = null;
+            let newTopElementPosition = Infinity;
+
+            visibleElements.forEach((element) => {
+              const rect = element.getBoundingClientRect();
+              if (rect.top >= 0 && rect.top < newTopElementPosition) {
+                newTopElementPosition = rect.top;
+                newTopElementId = element.id;
+              }
+            });
+            if (newTopElementId && newTopElementId !== topElementId) {
+              topElementId = newTopElementId;
+              debouncedSendForScrollSync(topElementId);
+            }
+          };
+          const observer = new IntersectionObserver(callback, options);
+          sections.forEach((section) => {
+            observer.observe(section);
+          });
+        }
       });
     </script>
   </body>
