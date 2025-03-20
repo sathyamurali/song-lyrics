@@ -125,6 +125,15 @@ function observeRows() {
 		if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
 		  console.log('Entry:', entry.target.id, entry.boundingClientRect.top); // Log entry values
 		  console.log('topVisibleEntry:', topVisibleEntry ? topVisibleEntry.target.id : null); // Log topVisibleEntry
+		  
+		if (entry.target.id === 'trRowAsAnchor-2') {
+			  console.log('trRowAsAnchor-2 Element:', document.getElementById('trRowAsAnchor-2')); // Log element existence
+			  console.log('trRowAsAnchor-2 offsetParent:', document.getElementById('trRowAsAnchor-2').offsetParent);
+			  console.log('trRowAsAnchor-2 offsetWidth:', document.getElementById('trRowAsAnchor-2').offsetWidth);
+			  console.log('trRowAsAnchor-2 offsetHeight:', document.getElementById('trRowAsAnchor-2').offsetHeight);
+			}
+
+		  
 
 		  if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
 			topVisibleEntry = entry;
