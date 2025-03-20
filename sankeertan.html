@@ -13,7 +13,9 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   </head>
   <body>
-    <label><input type="checkbox" id="contentSync" checked> Content Sync</label><br>
+    <label
+      ><input type="checkbox" id="contentSync" checked /> Content Sync</label
+    ><br />
     <label><input type="checkbox" id="scrollSync" /> Scroll Sync</label><br />
     <div id="content"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -25,21 +27,21 @@
         const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
         const contentDiv = document.getElementById("content");
         const scrollSyncCheckbox = document.getElementById("scrollSync");
-        const contentSyncCheckbox = document.getElementById('contentSync');
+        const contentSyncCheckbox = document.getElementById("contentSync");
 
         function scrollToRow(id) {
-          console.log("received scroll id as:"+id);
-          const rowElement = document.getElementById("trRowAsAnchor-"+id);
+          console.log("received scroll id as:" + id);
+          const rowElement = document.getElementById("trRowAsAnchor-" + id);
           if (rowElement) {
             rowElement.scrollIntoView({
-              behavior: 'smooth', // Optional: smooth scrolling animation
-              block: 'start', // Scroll to the top of the element
+              behavior: "smooth", // Optional: smooth scrolling animation
+              block: "start", // Scroll to the top of the element
             });
           } else {
-            console.warn('Row element not found:', rowId);
+            console.warn("Row element not found:", rowId);
           }
         }
-        
+
         // Initial data fetch
         async function fetchInitialData() {
           const { data, error } = await client
@@ -48,8 +50,8 @@
             .eq("id", 1)
             .single();
           if (data) {
-            if (contentSyncCheckbox.checked){
-                contentDiv.innerHTML = data.content;
+            if (contentSyncCheckbox.checked) {
+              contentDiv.innerHTML = data.content;
             }
             contentDiv.scrollTop = data.scroll_position;
           }
@@ -62,17 +64,15 @@
             "postgres_changes",
             { event: "UPDATE", schema: "public", table: "sankeertan" },
             (payload) => {
-              //console.log("Postgres changes payload:", payload);
               if (payload.new.id === 1) {
-                if (payload.new.content !== undefined && contentSyncCheckbox.checked) {
+                if ( payload.new.content !== undefined && contentSyncCheckbox.checked) {
                   contentDiv.innerHTML = payload.new.content;
+                  scrollToRow(payload.new.scroll_position);
                 }
                 if (payload.new.scroll_position !== undefined) {
                   if (scrollSyncCheckbox && scrollSyncCheckbox.checked) {
-                    //contentDiv.scrollTop = payload.new.scroll_position;
                     scrollToRow(payload.new.scroll_position);
                   } else if (!scrollSyncCheckbox) {
-                    //contentDiv.scrollTop = payload.new.scroll_position;
                     scrollToRow(payload.new.scroll_position);
                   }
                 }
