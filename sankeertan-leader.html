@@ -92,6 +92,7 @@
           const debouncedSendForScrollSync = debounce(sendScrollSync, 1000); 
           
           function observeRows() {
+            debugger;
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                   if (entry.isIntersecting && scrollBroadcastCheckbox.checked) {
