@@ -103,13 +103,13 @@
           function observeRows() {
               const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                  if (entry.isIntersecting) {
+                  if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
                     const visibleRowId = entry.target.id;
                     //console.log(visibleRowId);
                     debouncedSendForScrollSync(visibleRowId); 
                   }
                 });
-              }, { threshold: 0.1 });
+              }, { threshold: 0 });
               const rows = document.querySelectorAll('tr[id]');
               rows.forEach(row => {
                   observer.observe(row);
