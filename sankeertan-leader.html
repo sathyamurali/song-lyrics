@@ -41,7 +41,7 @@
           if (data) {
             contentDiv.innerHTML = data.content;
             contentDiv.scrollTop = data.scroll_position;
-            observeRows();
+            setTimeout(() => {observeRows(), 100); 
           }
         }
         fetchInitialData();
@@ -52,7 +52,7 @@
             .upsert({ id: 1, content: contentInput.value });
           contentDiv.innerHTML = contentInput.value;
           contentInput.value = "";
-          observeRows();
+          setTimeout(() => {observeRows(), 100); 
         });
 
         /*contentDiv.addEventListener("scroll", async () => {
@@ -70,7 +70,7 @@
             if (payload.new.id === 1) {
               contentDiv.innerHTML = payload.new.content;
               contentDiv.scrollTop = payload.new.scroll_position;
-              observeRows();
+              setTimeout(() => {observeRows(), 100); 
             }
           })
           .subscribe();
