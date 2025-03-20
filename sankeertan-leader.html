@@ -111,11 +111,10 @@
                 });
               }, { threshold: 0.1 });
               const rows = document.querySelectorAll('tr[id]');
-              rows.each(function() {
-                observer.observe(this);
+              rows.forEach(row => {
+                  observer.observe(row);
               });
           }
-                    
       });
     </script>
   </body>
