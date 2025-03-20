@@ -122,6 +122,10 @@ function observeRows() {
     console.log('Reversed Entries:', reversedEntries.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log reversed entries
 
 	reversedEntries.forEach((entry) => {
+		console.log(entry);
+		console.log("-----------")
+		console.log(entry.boundingClientRect.top);
+		console.log("=============")
 		if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
 		  console.log('Entry:', entry.target.id, entry.boundingClientRect.top); // Log entry values
 		  console.log('topVisibleEntry:', topVisibleEntry ? topVisibleEntry.target.id : null); // Log topVisibleEntry
