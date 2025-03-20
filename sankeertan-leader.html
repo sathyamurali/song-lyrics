@@ -104,18 +104,23 @@ function observeRows() {
   const observer = new IntersectionObserver((entries) => {
     let topVisibleEntry = null;
 
-    console.log('Original Entries:', entries.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log original entries
+    // Create a deep copy of entries
+    const entriesCopy = entries.map(entry => ({
+      target: entry.target,
+      isIntersecting: entry.isIntersecting,
+      boundingClientRect: { ...entry.boundingClientRect },
+      intersectionRatio: entry.intersectionRatio,
+      intersectionRect: { ...entry.intersectionRect },
+      rootBounds: entry.rootBounds ? { ...entry.rootBounds } : null,
+      time: entry.time,
+    }));
 
-    const reversedEntries = [...entries].reverse();
-
-    console.log('Reversed Entries:', reversedEntries.map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))); // Log reversed entries
+    const reversedEntries = [...entriesCopy].reverse();
 
     reversedEntries.forEach((entry) => {
       if (entry.isIntersecting && entry.boundingClientRect.top >= 0) {
-        console.log('Processing Entry:', entry.target.id, entry.boundingClientRect.top); // Log processing entries
         if (!topVisibleEntry || entry.boundingClientRect.top < topVisibleEntry.boundingClientRect.top) {
           topVisibleEntry = entry;
-          console.log('New Top Visible Entry:', entry.target.id, entry.boundingClientRect.top); // Log new top visible entry
         }
       }
     });
