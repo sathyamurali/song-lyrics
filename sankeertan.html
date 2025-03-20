@@ -28,6 +28,7 @@
         const contentSyncCheckbox = document.getElementById('contentSync');
 
         function scrollToRow(id) {
+          console.log("received scroll id as:"+id);
           const rowElement = document.getElementById("trRowAsAnchor-"+id);
           if (rowElement) {
             rowElement.scrollIntoView({
