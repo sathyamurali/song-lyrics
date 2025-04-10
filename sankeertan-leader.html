@@ -82,6 +82,7 @@
                 if ( payload.new.content !== undefined && contentSyncCheckbox.checked) {
                   contentDiv.innerHTML = payload.new.content;
                   scrollToRow(payload.new.scroll_position);
+		  setTimeout(observeRows, 200);
                 }
               }
             }
