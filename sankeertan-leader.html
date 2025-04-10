@@ -58,7 +58,7 @@
           if (data) {
             contentDiv.innerHTML = data.content;
             scrollToRow(data.scroll_position);
-            setTimeout(observeRows, 100);
+            setTimeout(observeRows, 200);
           }
         }
         fetchInitialData();
@@ -98,7 +98,7 @@
           };
         }
         async function sendScrollSync(idStr) {
-			//console.log(idStr);
+	   console.log(`sendScrollSync:${idStr}`);
           if (scrollBroadcastCheckbox.checked) {
             const id = idStr.match(/\d+/g).map(Number)[0];
 			console.log("sending id:"+id);
