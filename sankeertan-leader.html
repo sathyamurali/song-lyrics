@@ -99,10 +99,10 @@
           };
         }
         async function sendScrollSync(idStr) {
-	   console.log(`sendScrollSync:${idStr}`);
+	   //console.log(`sendScrollSync:${idStr}`);
           if (scrollBroadcastCheckbox.checked) {
             const id = idStr.match(/\d+/g).map(Number)[0];
-			console.log("sending id:"+id);
+		//console.log("sending id:"+id);
             try {
               await client
                 .from("sankeertan")
